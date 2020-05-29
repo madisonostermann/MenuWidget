@@ -24,19 +24,13 @@ struct ViewController: View {
     @State var page:String = "ViewA" //default view
     @State var icon:String = "a.circle.fill" //icon for current screen- default corresponds to default view
     let screenSize = UIScreen.main.bounds //constant to reference the screensize
+    @State var expand:Bool = false //if you're selecting the screen, show the whole menu... if not, collapse
     let iconSize = UIScreen.main.bounds.width*0.07 //frame for the icon; set smaller than that of the button it's on
-    @State var selectScreen:Bool = false //if you're selecting the screen, show the whole menu... if not, collapse
-    
     @State private var rightSide:Bool = true //should menu be on right or left
-    @State private var xOffset:CGFloat = 0 //offset used for right/left side
-    @State private var yOffset:CGFloat = 0 //offset used for right/left side
     
     // gesture recognizer that changes the xOffset & yOffset if the menu is dragged far enough across the screen
     var menuDrag: some Gesture {
-        DragGesture().onChanged { value in
-            self.xOffset = value.location.x //tracks the x position of finger dragging across screen
-            self.yOffset = value.location.y //tracks the y position of finger dragging across screen
-        }.onEnded { value in
+        DragGesture().onChanged { value in }.onEnded { value in
             //if menu is on right side and gets dragged to the left half of the screen
             //OR if menu is on left side and gets dragged to the right half of the screen
             //toggle 'rightSide' so the menu moves to the other side of the screen
@@ -44,9 +38,6 @@ struct ViewController: View {
                 (!self.rightSide && value.translation.width > self.screenSize.width*0.5) {
                 self.rightSide.toggle()
             }
-            //reset offsets
-            self.xOffset = 0
-            self.yOffset = 0
         }
     }
     
@@ -67,7 +58,7 @@ struct ViewController: View {
             ZStack { //layers page and menu widget on top of each other (z-axis)
                 //menu widget buttons are stacked vertically- could be changed to horizontally with HStack
                 VStack {
-                    if selectScreen { //if you're selecting the screen, all should appear... otherwise just the current should
+                    if expand { //if you're selecting the screen, all should appear... otherwise just the current should
                         //ViewA
                         Button(action: {
                             self.page = "ViewA" //ViewA button tapped -> change "page" to ViewA
@@ -94,11 +85,11 @@ struct ViewController: View {
                     }
                     //Chevron/Current Screen- which icon shows depends on if the screen is being selected or not
                     Button(action: {
-                        self.selectScreen.toggle() //changes which menu buttons are shown
+                        self.expand.toggle() //changes which menu buttons are shown
                     }) {
                         //if you're selecting the screen show the chevron, if not show the icon for the current page
                         //if you're selecting the screen the chevron's height should shrink so it's not un-proportional
-                        Image(systemName: selectScreen ? "chevron.up" : icon).resizable().frame(width: iconSize, height: selectScreen ? iconSize/3 : iconSize)
+                        Image(systemName: expand ? "chevron.up" : icon).resizable().frame(width: iconSize, height: expand ? iconSize/3 : iconSize)
                         }.buttonStyle(PageButtonStyle()).cornerRadius(15).animation(.spring()).gesture(menuDrag) //add animation to the button so chevron/icon shrinks/stretches, and add menuDrag gesture so if it's dragged the menu moves
                 }.padding([.all]).animation(.spring()).gesture(menuDrag) //end of button vstack
                 //add animation to the menu vstack so it fades in/out, and add menuDrag gesture so if any of the vstack is dragged the menu moves
@@ -107,3 +98,4 @@ struct ViewController: View {
         } //end of view zstack
     } //end of view
 } //end of struct
+
