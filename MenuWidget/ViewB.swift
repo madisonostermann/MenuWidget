@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  ViewB.swift
 //  MenuWidget
 //
 //  Created by Madison Gipson on 5/29/20.
@@ -8,14 +8,14 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct ViewB: View {
     var body: some View {
-        Text("Hello, World!")
+        Text("View B")
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct ViewB_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ViewB()
     }
 }
